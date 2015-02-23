@@ -13,9 +13,11 @@ module.exports = function (opt) {
 			var linkFields = compile(fields + ',href,templated');
 			var links = obj._links;
 
-			links.forEach(function(namespace) {
+			for (var i in links) {
+				var namespace = links[i];
 				if(Array.isArray(namespace)) {
-					namespace.forEach(function(link) {
+					for (var j in namespace) {
+						var link = namespace[j];
 						link = filter(link, linkFields);
 					});
 				} else {
@@ -28,9 +30,11 @@ module.exports = function (opt) {
 		if(obj._embedded) {
 			var embedded = obj._embedded;
 
-			embedded.forEach(function(namespace) {
+			for (var i in embedded) {
+				var namespace = embedded[i];
 				if(Array.isArray(namespace)) {
-					namespace.forEach(function(embed) {
+					for (var j in namespace) {
+						var embed = namespace[j];
 						embed = partialResponse(embed, fields);
 					});
 				} else {
