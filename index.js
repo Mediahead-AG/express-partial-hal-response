@@ -14,16 +14,14 @@ module.exports = function (opt) {
 			var links = obj._links;
 
 			for (var i in links) {
-				var namespace = links[i];
-				if(Array.isArray(namespace)) {
-					for (var j in namespace) {
-						var link = namespace[j];
-						link = filter(link, linkFields);
-					});
+				if(Array.isArray(links[i])) {
+					for (var j in links[i]) {
+						links[i][j] = filter(links[i][j], linkFields);
+					}
 				} else {
-					namespace = filter(namespace, linkFields);
+					links[i] = filter(links[i], linkFields);
 				}
-			});
+			}
 		}
 
 		var embedded = undefined;
@@ -31,19 +29,20 @@ module.exports = function (opt) {
 			var embedded = obj._embedded;
 
 			for (var i in embedded) {
-				var namespace = embedded[i];
-				if(Array.isArray(namespace)) {
-					for (var j in namespace) {
-						var embed = namespace[j];
-						embed = partialResponse(embed, fields);
-					});
+				if(Array.isArray(embedded[i])) {
+					for (var j in embedded[i]) {
+						embedded[i][j] = partialResponse(embedded[i][j], fields);
+					}
 				} else {
-					namespace = partialResponse(namespace, fields);
+					embedded[i] = partialResponse(embedded[i], fields);
 				}
-			});
+			}
 		}
 
 		obj = filter(obj, compile(fields));
+		if(!obj) {
+			obj = {};
+		}
 
 		if(links) {
 			obj._links = links;
