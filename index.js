@@ -6,16 +6,19 @@ module.exports = function (opt) {
 	opt = opt || {};
 
 	function partialResponse(obj, fields) {
-		if (!fields) return obj;
+		var i, j;
+		if (!fields) {
+			return obj;
+		}
 
-		var links = undefined;
+		var links;
 		if(obj._links) {
 			var linkFields = compile(fields + ',href,templated');
-			var links = obj._links;
+			links = obj._links;
 
-			for (var i in links) {
+			for (i in links) {
 				if(Array.isArray(links[i])) {
-					for (var j in links[i]) {
+					for (j = 0; i < embedded[i].length; j++) {
 						links[i][j] = filter(links[i][j], linkFields);
 					}
 				} else {
@@ -24,13 +27,13 @@ module.exports = function (opt) {
 			}
 		}
 
-		var embedded = undefined;
+		var embedded;
 		if(obj._embedded) {
-			var embedded = obj._embedded;
+			embedded = obj._embedded;
 
-			for (var i in embedded) {
+			for (i in embedded) {
 				if(Array.isArray(embedded[i])) {
-					for (var j in embedded[i]) {
+					for (j = 0; i < embedded[i].length; j++) {
 						embedded[i][j] = partialResponse(embedded[i][j], fields);
 					}
 				} else {
@@ -72,7 +75,9 @@ module.exports = function (opt) {
 	return function (req, res, next) {
 		if (!res.__isJSONMaskWrapped) {
 			res.json = wrap(res.json.bind(res));
-			if (req.jsonp) res.jsonp = wrap(res.jsonp.bind(res));
+			if (req.jsonp) {
+				res.jsonp = wrap(res.jsonp.bind(res));
+			}
 			res.__isJSONMaskWrapped = true;
 		}
 		next();
