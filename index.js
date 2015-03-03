@@ -45,7 +45,7 @@ module.exports = function (opt) {
 		}
 		var embedded;
 		if(obj._embedded) {
-			embedded = walkEmbedded(obj._embedded function(link) {
+			embedded = walkEmbedded(obj._embedded, function(link) {
 				partialResponse(link, fields);
 			});
 		}
