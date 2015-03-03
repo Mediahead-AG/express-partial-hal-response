@@ -8,9 +8,12 @@ module.exports = function (opt) {
 	/**
 	 * Walk over all Links and filter them
 	 * @param  {Object} links
+	 * @param  {String} fields
 	 * @return {Object}
 	 */
-	function walkLinks(links) {
+	function walkLinks(links, fields) {
+		var i, j;
+
 		var linkFields = compile(fields + ',href,templated');
 
 		for (i in links) {
@@ -27,9 +30,12 @@ module.exports = function (opt) {
 	/**
 	 * Walk over all Embedded Objects and filter them
 	 * @param  {Object} embedded
+	 * @param  {String} fields
 	 * @return {Object}
 	 */
-	function walkEmbedded(embedded) {
+	function walkEmbedded(embedded, fields) {
+		var i, j;
+
 		for (i in embedded) {
 			if(Array.isArray(embedded[i])) {
 				for (j = 0; i < embedded[i].length; j++) {
@@ -48,18 +54,17 @@ module.exports = function (opt) {
 	 * @return {Filtered Hal Response}
 	 */
 	function partialResponse(obj, fields) {
-		var i, j;
 		if (!fields) {
 			return obj;
 		}
 
 		var links;
 		if(obj._links) {
-			links = walkLinks(obj._links);
+			links = walkLinks(obj._links, fields);
 		}
 		var embedded;
 		if(obj._embedded) {
-			embedded = walkEmbedded(obj._embedded);
+			embedded = walkEmbedded(obj._embedded, fields);
 		}
 
 		obj = filter(obj, compile(fields));
