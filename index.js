@@ -5,6 +5,48 @@ var jsonMask = require('json-mask'),
 module.exports = function (opt) {
 	opt = opt || {};
 
+	/**
+	 * Walk over all Links and filter them
+	 * @param  {Object} links
+	 * @return {Object}
+	 */
+	function walkLinks(links) {
+		var linkFields = compile(fields + ',href,templated');
+
+		for (i in links) {
+			if(Array.isArray(links[i])) {
+				for (j = 0; i < links[i].length; j++) {
+					links[i][j] = filter(links[i][j], linkFields);
+				}
+			} else {
+				links[i] = filter(links[i], linkFields);
+			}
+		}
+	}
+
+	/**
+	 * Walk over all Embedded Objects and filter them
+	 * @param  {Object} embedded
+	 * @return {Object}
+	 */
+	function walkEmbedded(embedded) {
+		for (i in embedded) {
+			if(Array.isArray(embedded[i])) {
+				for (j = 0; i < embedded[i].length; j++) {
+					embedded[i][j] = partialResponse(embedded[i][j], fields);
+				}
+			} else {
+				embedded[i] = partialResponse(embedded[i], fields);
+			}
+		}
+	}
+
+	/**
+	 * Filter Hal Response
+	 * @param  {HalResponse} obj
+	 * @param  {String} fields
+	 * @return {Filtered Hal Response}
+	 */
 	function partialResponse(obj, fields) {
 		var i, j;
 		if (!fields) {
@@ -13,33 +55,11 @@ module.exports = function (opt) {
 
 		var links;
 		if(obj._links) {
-			var linkFields = compile(fields + ',href,templated');
-			links = obj._links;
-
-			for (i in links) {
-				if(Array.isArray(links[i])) {
-					for (j = 0; i < embedded[i].length; j++) {
-						links[i][j] = filter(links[i][j], linkFields);
-					}
-				} else {
-					links[i] = filter(links[i], linkFields);
-				}
-			}
+			links = walkLinks(obj._links);
 		}
-
 		var embedded;
 		if(obj._embedded) {
-			embedded = obj._embedded;
-
-			for (i in embedded) {
-				if(Array.isArray(embedded[i])) {
-					for (j = 0; i < embedded[i].length; j++) {
-						embedded[i][j] = partialResponse(embedded[i][j], fields);
-					}
-				} else {
-					embedded[i] = partialResponse(embedded[i], fields);
-				}
-			}
+			embedded = walkEmbedded(obj._embedded);
 		}
 
 		obj = filter(obj, compile(fields));
@@ -57,6 +77,11 @@ module.exports = function (opt) {
 		return obj;
 	}
 
+	/**
+	 * Apply partialResponse
+	 * @param  {Function} orig
+	 * @return {Function}
+	 */
 	function wrap(orig) {
 		return function (obj) {
 			var param = this.req.query[opt.query || 'fields'];
@@ -72,6 +97,13 @@ module.exports = function (opt) {
 		};
 	}
 
+	/**
+	 * Filter it if it isn't allready
+	 * @param  {Request}   req
+	 * @param  {Response}   res
+	 * @param  {Function} next
+	 * @return void
+	 */
 	return function (req, res, next) {
 		if (!res.__isJSONMaskWrapped) {
 			res.json = wrap(res.json.bind(res));
