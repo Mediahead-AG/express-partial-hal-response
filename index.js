@@ -6,43 +6,20 @@ module.exports = function (opt) {
 	opt = opt || {};
 
 	/**
-	 * Walk over all Links and filter them
-	 * @param  {Object} links
-	 * @param  {String} fields
+	 * Walk over all Links / Embedded Objects and give them into the callback
+	 * @param  {Object} objects
 	 * @return {Object}
 	 */
-	function walkLinks(links, fields) {
+	function walk(objects, callback) {
 		var i, j;
 
-		var linkFields = compile(fields + ',href,templated');
-
-		for (i in links) {
-			if(Array.isArray(links[i])) {
-				for (j = 0; i < links[i].length; j++) {
-					links[i][j] = filter(links[i][j], linkFields);
+		for (i in objects) {
+			if(Array.isArray(objects[i])) {
+				for (j = 0; i < objects[i].length; j++) {
+					objects[i][j] = callback(objects[i][j]);
 				}
 			} else {
-				links[i] = filter(links[i], linkFields);
-			}
-		}
-	}
-
-	/**
-	 * Walk over all Embedded Objects and filter them
-	 * @param  {Object} embedded
-	 * @param  {String} fields
-	 * @return {Object}
-	 */
-	function walkEmbedded(embedded, fields) {
-		var i, j;
-
-		for (i in embedded) {
-			if(Array.isArray(embedded[i])) {
-				for (j = 0; i < embedded[i].length; j++) {
-					embedded[i][j] = partialResponse(embedded[i][j], fields);
-				}
-			} else {
-				embedded[i] = partialResponse(embedded[i], fields);
+				objects[i] = callback(objects[i]);
 			}
 		}
 	}
@@ -59,12 +36,18 @@ module.exports = function (opt) {
 		}
 
 		var links;
+		var linkFields = compile(fields + ',href,templated');
+
 		if(obj._links) {
-			links = walkLinks(obj._links, fields);
+			links = walk(obj._links, function(link) {
+				filter(link, linkFields);
+			});
 		}
 		var embedded;
 		if(obj._embedded) {
-			embedded = walkEmbedded(obj._embedded, fields);
+			embedded = walkEmbedded(obj._embedded function(link) {
+				partialResponse(link, fields);
+			});
 		}
 
 		obj = filter(obj, compile(fields));
