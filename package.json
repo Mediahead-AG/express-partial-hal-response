@@ -21,6 +21,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/maennchen/express-partial-hal-response.git"
+    "url": "git@github.com:Mediahead-AG/express-partial-hal-response.git"
   }
 }
