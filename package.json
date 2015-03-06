@@ -1,6 +1,6 @@
 {
   "name": "express-partial-hal-response",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Express middleware for filtering-out parts of HAL+JSON responses based on the `fields` query-string.",
   "main": "index.js",
   "keywords": [
