@@ -1,4 +1,6 @@
-# Express Partial Hal Response Middleware [![NPM version](https://badge.fury.io/js/express-partial-hal-response.png)](http://badge.fury.io/js/express-partial-hal-response)
+# Express Partial Hal Response Middleware
+[![NPM version](https://badge.fury.io/js/express-partial-hal-response.png)](http://badge.fury.io/js/express-partial-hal-response)
+[![Code Climate](https://codeclimate.com/github/Mediahead-AG/express-partial-hal-response/badges/gpa.svg)](https://codeclimate.com/github/Mediahead-AG/express-partial-hal-response)
 
 This Library is strongly influenced by [express-partial-response](https://github.com/nemtsov/express-partial-response).
 
